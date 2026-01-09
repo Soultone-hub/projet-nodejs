@@ -8,31 +8,51 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  password      String
-  name          String?
-  role          String    @default("USER") // Pour la gestion des rôles
-  isTwoFactorEnabled Boolean @default(false)
-  twoFactorSecret    String? // Pour stocker la clé TOTP
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
+  id                 String    @id @default(uuid())
+  email              String    @unique
+  password           String?   // Optionnel pour OAuth futur
+  name               String?
+  role               String    @default("USER")
+  
+  // --- Champs de Sécurité & Statut ---
+  emailVerifiedAt    DateTime? 
+  twoFactorEnabledAt DateTime?
+  disabledAt         DateTime?
+  isTwoFactorEnabled Boolean   @default(false)
+  twoFactorSecret    String?
+  
+  // --- Timestamps & Relations ---
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  sessions           Session[]
 }
 
 model Session {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   userId       String
-  user         User     @relation(fields: [userId], references: [id])
-  refreshToken String   @unique
+  user         User      @relation(fields: [userId], references: [id])
+  refreshToken String    @unique
   expiresAt    DateTime
-  ip           String?  // Ajoute ceci
-  userAgent    String?  // Ajoute ceci
-  revokedAt    DateTime? // Utile pour la déconnexion
-  createdAt    DateTime @default(now())
+  createdAt    DateTime  @default(now())
+  
+  // --- Gestion des Sessions ---
+  revokedAt    DateTime? // Pour le Logout (Whitelist)
+  ip           String?
+  userAgent    String?
 }
 
+model LoginHistory {
+  id        String   @id @default(uuid())
+  email     String
+  ip        String
+  userAgent String
+  success   Boolean
+  createdAt DateTime @default(now())
+}
+
+// Table optionnelle si tu veux séparer les RefreshTokens des Sessions
+// Mais dans ton cas, la table Session suffit déjà.
 model RefreshToken { 
-  id        String    @id @default(uuid())
-  token     String    @unique
+  id    String @id @default(uuid())
+  token String @unique
 }

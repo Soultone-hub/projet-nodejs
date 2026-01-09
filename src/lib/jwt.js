@@ -1,15 +1,15 @@
 import { SignJWT } from "jose";
-
-const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+import "dotenv/config";
+const secretKey = process.env.JWT_SECRET || "ma_super_cle_secrete_de_secours_32_caracteres";
+const secret = new TextEncoder().encode(secretKey);
 
 export const generateAccessToken = async (payload) => {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("15m") // Expire vite
+    .setExpirationTime("15m")
     .sign(secret);
 };
-
 export const generateRefreshToken = async (payload) => {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })

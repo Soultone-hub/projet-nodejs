@@ -40,7 +40,33 @@ if (existingUser) throw new Error("Cet email est déjà utilisé");
     // Si tu en as besoin pour le TP, vois l'étape 2 ci-dessous.
   }
 });
-
+  await prisma.loginHistory.create({
+  data: {
+    email: email,
+    ip: ipAddress, // Tu devras passer l'IP depuis le contrôleur
+    userAgent: userAgent, // Tu devras passer le UserAgent depuis le contrôleur
+    success: true
+  }
+});
     return { accessToken, refreshToken: refreshTokenString, user: { id: user.id, email: user.email } };
   }
+
+  static async getProfile(userId) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      emailVerifiedAt: true,
+      twoFactorEnabledAt: true,
+      createdAt: true
+    }
+  });
+
+  if (!user) throw new Error("Utilisateur non trouvé");
+  return user;
+}
+
 }

@@ -23,4 +23,15 @@ export class UserController {
       data: result
     });
   }
+
+
+  static async getMe(req, res) {
+  // req.user est rempli par le middleware userGuard
+  const user = await UserService.getProfile(req.user.id);
+  
+  res.json({
+    success: true,
+    data: user
+  });
+}
 }

@@ -1,0 +1,574 @@
+{
+  "yaakVersion": "2025.9.3",
+  "yaakSchema": 4,
+  "timestamp": "2026-01-09T22:15:21.454618",
+  "resources": {
+    "workspaces": [
+      {
+        "model": "workspace",
+        "id": "wk_gi7jW2KdXU",
+        "createdAt": "2026-01-09T14:02:36.593992",
+        "updatedAt": "2026-01-09T14:02:36.593992600",
+        "authentication": {},
+        "authenticationType": null,
+        "description": "",
+        "headers": [],
+        "name": "Yaak",
+        "encryptionKeyChallenge": null,
+        "settingValidateCertificates": true,
+        "settingFollowRedirects": true,
+        "settingRequestTimeout": 0
+      }
+    ],
+    "environments": [],
+    "folders": [],
+    "httpRequests": [
+      {
+        "model": "http_request",
+        "id": "rq_hQtxRMSRpT",
+        "createdAt": "2026-01-09T22:09:04.774629400",
+        "updatedAt": "2026-01-09T22:10:13.715127800",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlOGJjZDA5LTRkZmEtNDQ1OC1hZTg2LTllMDhjMTgyYjdmNSIsImlhdCI6MTc2Nzk5NTc4MSwiZXhwIjoxNzY4NjAwNTgxfQ.jd1TwgmGT7Uy__i5GE6UEe1IwlGCWUJwv08KyWAu6mE",
+            "id": "2ggHdzNR2s"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "bIUyIhKgd5"
+          }
+        ],
+        "method": "DELETE",
+        "name": "delete account",
+        "sortPriority": -1767993552347.0,
+        "url": "http://localhost:3000/me",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_uaRjEnp9Fg",
+        "createdAt": "2026-01-09T21:40:35.493026900",
+        "updatedAt": "2026-01-09T22:03:29.379037600",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlOGJjZDA5LTRkZmEtNDQ1OC1hZTg2LTllMDhjMTgyYjdmNSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY3OTk1NzgxLCJleHAiOjE3Njc5OTY2ODF9.fOHNWCsRr4gVNAZCoCUZkFQM5Z2SZ8YV2g6pDBBGIPM",
+            "id": "mhj4pqYtTw"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "dvmmX3qmEc"
+          }
+        ],
+        "method": "POST",
+        "name": "désactivation2AF",
+        "sortPriority": -1767993552347.0,
+        "url": "http://localhost:3000/2fa/disable",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_pqoTEc5438",
+        "createdAt": "2026-01-09T21:32:21.982264500",
+        "updatedAt": "2026-01-09T21:38:25.819779100",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{ \"email\": \"test777@example.com\" }"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "dwCYty7m5v"
+          }
+        ],
+        "method": "POST",
+        "name": "resend mail",
+        "sortPriority": -1767993552347.0,
+        "url": "http://localhost:3000/resend-confirmation",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_M5rw7Xpfy4",
+        "createdAt": "2026-01-09T21:19:12.349612400",
+        "updatedAt": "2026-01-09T21:30:04.193445800",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{ \"token\": \"67a5a645f215ade7e2e245e27f847f9d0563b19926e8c0dd685b819ed5207b63\" }"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "VZaIEvgMD6"
+          }
+        ],
+        "method": "POST",
+        "name": "confirm account",
+        "sortPriority": -1767993552347.0,
+        "url": "http://localhost:3000/confirm-account",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_Mbhru5V8oJ",
+        "createdAt": "2026-01-09T20:36:12.114208800",
+        "updatedAt": "2026-01-09T20:36:58.689417400",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"provider\": \"google\",\n  \"providerId\": \"123456789\",\n  \"email\": \"user.google@gmail.com\",\n  \"name\": \"User Google\"\n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "FHCkZbIGtB"
+          }
+        ],
+        "method": "POST",
+        "name": "OAuth",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/oauth/callback",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_XL3rXSVbSz",
+        "createdAt": "2026-01-09T20:33:13.457612400",
+        "updatedAt": "2026-01-09T20:35:24.963620400",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"name\": \"Nouveau\"\n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlYzdjMDY4LThlYzItNGI0Yy1hOWE2LTIwZjE2ZWU3Mjk2ZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY3OTkwNzEyLCJleHAiOjE3Njc5OTE2MTJ9.LMdVvogWPepT6Fh1z5DAZRXyMOYnTgPddOMItl7_HC8",
+            "id": "V8URPUC0P2"
+          },
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "FyH67IszhQ"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "0dX9vJM9Cn"
+          }
+        ],
+        "method": "PATCH",
+        "name": "UpdateMe",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/me",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_hSsWswe5X5",
+        "createdAt": "2026-01-09T20:28:26.593818900",
+        "updatedAt": "2026-01-09T21:47:13.027689400",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"userId\": \"cec7c068-8ec2-4b4c-a9a6-20f16ee7296e\",\n  \"code\": \"179713\"\n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "UEVbudTaMv"
+          }
+        ],
+        "method": "POST",
+        "name": "Valide le code du login en 2 étape",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/login/2fa",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_zLw49W55cY",
+        "createdAt": "2026-01-09T20:24:47.630604200",
+        "updatedAt": "2026-01-09T21:59:41.758594100",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{ \"code\": \"499436\" }"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlOGJjZDA5LTRkZmEtNDQ1OC1hZTg2LTllMDhjMTgyYjdmNSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY3OTk1NzgxLCJleHAiOjE3Njc5OTY2ODF9.fOHNWCsRr4gVNAZCoCUZkFQM5Z2SZ8YV2g6pDBBGIPM",
+            "id": "5JjWSWbBHe"
+          },
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "ctJre2Qu4c"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "7rmKwZS4u6"
+          }
+        ],
+        "method": "POST",
+        "name": "Activer le 2FA",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/2fa/activate",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_3YLb5WdthR",
+        "createdAt": "2026-01-09T20:21:34.724082700",
+        "updatedAt": "2026-01-09T21:56:42.111210600",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlOGJjZDA5LTRkZmEtNDQ1OC1hZTg2LTllMDhjMTgyYjdmNSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY3OTk1NzgxLCJleHAiOjE3Njc5OTY2ODF9.fOHNWCsRr4gVNAZCoCUZkFQM5Z2SZ8YV2g6pDBBGIPM",
+            "id": "qNFvqd4FkB"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "cEcktqctK0"
+          }
+        ],
+        "method": "GET",
+        "name": "Générer le secret 2FA",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/2fa/setup",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_dUeMUp3c44",
+        "createdAt": "2026-01-09T20:14:53.628972900",
+        "updatedAt": "2026-01-09T20:19:46.237469400",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlYzdjMDY4LThlYzItNGI0Yy1hOWE2LTIwZjE2ZWU3Mjk2ZSIsImlhdCI6MTc2Nzk4OTg0MSwiZXhwIjoxNzY4NTk0NjQxfQ.SAJ9ue3EifGN0Sfc8YMIEFyR3u8if0VJF_JWVwceAP4\"}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "6SNzrKMpAJ"
+          },
+          {
+            "enabled": true,
+            "name": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlYzdjMDY4LThlYzItNGI0Yy1hOWE2LTIwZjE2ZWU3Mjk2ZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY3OTg5ODQxLCJleHAiOjE3Njc5OTA3NDF9.RafiminQGwXf5c-IaWsgM7WMXqsK7iSBXifzTHaaq48",
+            "id": "2xG3I9FvX3"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "giRdBSDxiC"
+          }
+        ],
+        "method": "DELETE",
+        "name": "Révoquer les autres",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/sessions-others",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_BnJyh3eAC3",
+        "createdAt": "2026-01-09T20:11:21.767540400",
+        "updatedAt": "2026-01-09T20:14:23.461579400",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlYzdjMDY4LThlYzItNGI0Yy1hOWE2LTIwZjE2ZWU3Mjk2ZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY3OTg5NjQ5LCJleHAiOjE3Njc5OTA1NDl9.TEhyCJf4LiB2XFNjLEW0ZDhph5Sln0cTfhRLXHTrCvo",
+            "id": "hhexbhYyT5"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "2tpegjwPBC"
+          }
+        ],
+        "method": "GET",
+        "name": "Lister les sessions",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/sessions",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_pJbWR3aa6d",
+        "createdAt": "2026-01-09T20:04:59.472940200",
+        "updatedAt": "2026-01-09T20:06:08.857748200",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\"email\": \"test4@example.com\"}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "x4TVUp8xVd"
+          }
+        ],
+        "method": "POST",
+        "name": "Forgot Password",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/forgot-password",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_xymNiduajn",
+        "createdAt": "2026-01-09T20:02:32.061059700",
+        "updatedAt": "2026-01-09T20:09:18.740105500",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlYzdjMDY4LThlYzItNGI0Yy1hOWE2LTIwZjE2ZWU3Mjk2ZSIsImlhdCI6MTc2Nzk4OTA2MywiZXhwIjoxNzY4NTkzODYzfQ.DT0Do7DnqSa8NYH0USCau_hIzv3zb-rh4RRbN9KLFD8\"}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "cAGznSt4XW"
+          },
+          {
+            "enabled": true,
+            "name": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlYzdjMDY4LThlYzItNGI0Yy1hOWE2LTIwZjE2ZWU3Mjk2ZSIsImlhdCI6MTc2Nzk4OTA2MywiZXhwIjoxNzY4NTkzODYzfQ.DT0Do7DnqSa8NYH0USCau_hIzv3zb-rh4RRbN9KLFD8",
+            "id": "mauPmCUZCX"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "DtYrN2PYIc"
+          }
+        ],
+        "method": "POST",
+        "name": "Logout",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/logout",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_s3p8bHnwc4",
+        "createdAt": "2026-01-09T20:00:36.998187400",
+        "updatedAt": "2026-01-09T20:01:51.876972700",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlYzdjMDY4LThlYzItNGI0Yy1hOWE2LTIwZjE2ZWU3Mjk2ZSIsImlhdCI6MTc2Nzk4ODY3MSwiZXhwIjoxNzY4NTkzNDcxfQ.gSRkZznPQpPY_3FHrrZbmvAVG_3xXu7r8WYy7TKrepA\"}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "kKEfqAU9Ss"
+          }
+        ],
+        "method": "POST",
+        "name": "Refresh Token",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/refresh",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_jEj9VFpPwn",
+        "createdAt": "2026-01-09T17:13:33.974451500",
+        "updatedAt": "2026-01-09T19:51:36.786076300",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImNlYzdjMDY4LThlYzItNGI0Yy1hOWE2LTIwZjE2ZWU3Mjk2ZSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY3OTg4MjYxLCJleHAiOjE3Njc5ODkxNjF9.Ohon3ruBT635M8RgDMf-VPpbgVqZIUOJOmZ21Ot8RNw",
+            "id": "3WCZ5fNKbw"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "ABjM3E2pbj"
+          }
+        ],
+        "method": "GET",
+        "name": "profile",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/users/me",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_2gHDcYikKL",
+        "createdAt": "2026-01-09T14:10:15.065213500",
+        "updatedAt": "2026-01-09T21:56:18.813803300",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"email\": \"test777@example.com\",\n  \"password\": \"mon_super_pasQ1word\"\n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "aRm2xVrryv"
+          }
+        ],
+        "method": "POST",
+        "name": "connexion",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/login",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_joBjueLgLs",
+        "createdAt": "2026-01-09T14:03:37.624054900",
+        "updatedAt": "2026-01-09T21:33:40.080571300",
+        "workspaceId": "wk_gi7jW2KdXU",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"email\": \"test777@example.com\",\n  \"password\": \"mon_super_pasQ1word\",\n  \"name\": \"Test\"\n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "WWYNy06zeF"
+          }
+        ],
+        "method": "POST",
+        "name": "inscription",
+        "sortPriority": -1767967417621.0,
+        "url": "http://localhost:3000/register",
+        "urlParameters": []
+      }
+    ],
+    "grpcRequests": [],
+    "websocketRequests": []
+  }
+}

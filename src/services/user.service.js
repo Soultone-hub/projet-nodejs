@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { randomBytes } from "crypto";
 import { authenticator } from 'otplib';
 import prisma from "#lib/prisma.js";
 import { PrismaClient } from "@prisma/client";
@@ -9,19 +10,25 @@ import { UnauthorizedException, ConflictException } from "#lib/exceptions.js";
 
 export class UserService {
   static async register(data) {
-    const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
-if (existingUser) throw new Error("Cet email est déjà utilisé");
-const hashedPassword = await bcrypt.hash(data.password, 10);    
-    return prisma.user.create({
-      data: {
-        email: data.email,
-        password: hashedPassword,
-        name: data.name,
-      },
-      select: { id: true, email: true, name: true }
-    });
-  }
+  const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
+  if (existingUser) throw new Error("Cet email est déjà utilisé");
 
+  const hashedPassword = await bcrypt.hash(data.password, 10);
+  
+  // Génération du jeton de vérification
+  const token = randomBytes(32).toString('hex');
+
+  return prisma.user.create({
+    data: {
+      email: data.email,
+      password: hashedPassword,
+      name: data.name,
+      verificationToken: token, // On ajoute le jeton ici
+    },
+    // On peut retourner le token ici pour faciliter tes tests dans Yaak
+    select: { id: true, email: true, name: true, verificationToken: true }
+  });
+}
  static async login(email, password, ip, userAgent) {
   // --- 1. PROTECTION BRUTE-FORCE ---
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
@@ -205,7 +212,8 @@ static async blacklistToken(token, expiresAt) {
 
 static async loginWithOAuth(provider, providerId, email, name) {
   // 1. Chercher si ce compte OAuth existe déjà
-  let oauthAccount = await prisma.oauthAccount.findUnique({
+  // Note: Prisma transforme souvent OAuthAccount en oAuthAccount ou oauthAccount
+  let account = await prisma.oAuthAccount.findUnique({
     where: {
       provider_providerId: { provider, providerId }
     },
@@ -214,26 +222,26 @@ static async loginWithOAuth(provider, providerId, email, name) {
 
   let user;
 
-  if (oauthAccount) {
-    user = oauthAccount.user;
+  if (account) {
+    user = account.user;
   } else {
-    // 2. Si le compte OAuth n'existe pas, on cherche par email
+    // 2. Chercher par email si le compte n'est pas lié
     user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      // 3. Si l'utilisateur n'existe pas du tout, on le crée (password: null)
+      // 3. Créer l'utilisateur si inexistant
       user = await prisma.user.create({
         data: {
           email,
           name,
-          emailVerifiedAt: new Date(), // OAuth garantit souvent l'email
+          emailVerifiedAt: new Date(),
           password: null 
         }
       });
     }
 
-    // 4. On lie le compte OAuth à l'utilisateur
-    await prisma.oauthAccount.create({
+    // 4. Lier le compte (Correction de la ligne 236)
+    await prisma.oAuthAccount.create({
       data: {
         provider,
         providerId,
@@ -242,7 +250,7 @@ static async loginWithOAuth(provider, providerId, email, name) {
     });
   }
 
-  // 5. On génère les tokens comme pour un login classique
+  // 5. Génération des tokens
   const accessToken = await generateAccessToken({ id: user.id, role: user.role });
   const refreshToken = await generateRefreshToken({ id: user.id });
 
@@ -356,5 +364,87 @@ static async loginStep2FA(userId, code) {
   });
 
   return { accessToken, refreshToken, user };
+}
+static async verifyEmail(userId) {
+  // On cherche l'utilisateur
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("Utilisateur non trouvé");
+
+  // On met à jour la date de vérification
+  return await prisma.user.update({
+    where: { id: userId },
+    data: { 
+      emailVerifiedAt: new Date() 
+    }
+  });
+}
+
+
+static async generateVerificationToken(userId) {
+  const token = randomBytes(32).toString('hex');
+  await prisma.user.update({
+    where: { id: userId },
+    data: { verificationToken: token }
+  });
+  return token;
+}
+
+static async verifyAccountByToken(token) {
+  const user = await prisma.user.findUnique({
+    where: { verificationToken: token }
+  });
+
+  if (!user) throw new Error("Jeton de vérification invalide ou expiré.");
+
+  return await prisma.user.update({
+    where: { id: user.id },
+    data: { 
+      emailVerifiedAt: new Date(),
+      verificationToken: null // On supprime le jeton après usage
+    }
+  });
+}
+
+static async resendVerificationToken(email) {
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (!user) throw new Error("Utilisateur non trouvé");
+  if (user.emailVerifiedAt) throw new Error("Ce compte est déjà confirmé");
+
+  // Génération d'un nouveau jeton
+  const newToken = randomBytes(32).toString('hex');
+
+  return await prisma.user.update({
+    where: { id: user.id },
+    data: { verificationToken: newToken },
+    select: { email: true, verificationToken: true }
+  });
+}
+static async disable2FA(userId) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("Utilisateur non trouvé");
+
+  // DÉCISION : Utilisation des noms exacts du schéma (isTwoFactorEnabled)
+  return await prisma.user.update({
+    where: { id: userId },
+    data: { 
+      twoFactorSecret: null,           // Supprime le secret
+      isTwoFactorEnabled: false,      // Décision : nom corrigé ici
+      twoFactorEnabledAt: null        // Optionnel : on remet aussi la date à null
+    }
+  });
+}
+static async deleteAccount(userId) {
+  // 1. Récupérer l'utilisateur pour obtenir son email
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("Utilisateur non trouvé");
+
+  // DÉCISION : Utilisation des bons champs (email pour LoginHistory, userId pour le reste)
+  return await prisma.$transaction([
+    prisma.session.deleteMany({ where: { userId: userId } }),
+    prisma.oAuthAccount.deleteMany({ where: { userId: userId } }),
+    prisma.loginHistory.deleteMany({ where: { email: user.email } }), // Corrigé ici
+    prisma.user.delete({ where: { id: userId } })
+  ]);
 }
 }

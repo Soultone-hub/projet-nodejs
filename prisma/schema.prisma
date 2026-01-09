@@ -13,7 +13,7 @@ model User {
   password           String?        // Nullable pour OAuth
   name               String?
   role               String         @default("USER")
-  
+  verificationToken String?  @unique
   // Dates de statut
   emailVerifiedAt    DateTime?
   twoFactorEnabledAt DateTime?

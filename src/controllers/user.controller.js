@@ -158,4 +158,75 @@ static async verifyMe(req, res) {
   const user = await UserService.verifyEmail(req.user.id);
   res.json({ success: true, message: "Email marqué comme vérifié !", data: user });
 }
+static async verifyMe(req, res) {
+  // req.user.id est récupéré grâce au middleware userGuard
+  const user = await UserService.verifyEmail(req.user.id);
+  
+  res.json({ 
+    success: true, 
+    message: "Votre email a été vérifié avec succès !",
+    data: {
+      email: user.email,
+      verifiedAt: user.emailVerifiedAt
+    }
+  });
+}
+static async confirmAccount(req, res) {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ success: false, error: "Le jeton est requis." });
+  }
+
+  try {
+    await UserService.verifyAccountByToken(token);
+    res.json({ success: true, message: "Compte activé avec succès !" });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+}
+static async resendConfirmation(req, res) {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ success: false, error: "L'email est requis" });
+  }
+
+  try {
+    const data = await UserService.resendVerificationToken(email);
+    res.json({ 
+      success: true, 
+      message: "Un nouveau jeton a été généré",
+      token: data.verificationToken // Pour tes tests Yaak
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+}
+static async disable2FA(req, res) {
+  try {
+    await UserService.disable2FA(req.user.id);
+    res.json({ 
+      success: true, 
+      message: "La double authentification a été désactivée avec succès." 
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+}
+static async deleteMe(req, res) {
+  try {
+    await UserService.deleteAccount(req.user.id);
+    
+    // Décision : On pourrait ici invalider le token actuel en le mettant en blacklist
+    // mais la suppression du user suffit à bloquer les prochains refresh.
+    
+    res.json({ 
+      success: true, 
+      message: "Votre compte et toutes vos données associées ont été supprimés." 
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+}
 }

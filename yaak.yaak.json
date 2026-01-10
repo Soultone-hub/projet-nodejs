@@ -1,7 +1,7 @@
 {
   "yaakVersion": "2025.9.3",
   "yaakSchema": 4,
-  "timestamp": "2026-01-10T10:54:26.760924300",
+  "timestamp": "2026-01-10T12:30:36.754609300",
   "resources": {
     "workspaces": [
       {
@@ -119,13 +119,13 @@
         "model": "http_request",
         "id": "rq_Mbhru5V8oJ",
         "createdAt": "2026-01-09T20:36:12.114208800",
-        "updatedAt": "2026-01-09T20:36:58.689417400",
+        "updatedAt": "2026-01-10T12:18:40.725787700",
         "workspaceId": "wk_gi7jW2KdXU",
         "folderId": null,
         "authentication": {},
         "authenticationType": null,
         "body": {
-          "text": "{\n  \"provider\": \"google\",\n  \"providerId\": \"123456789\",\n  \"email\": \"user.google@gmail.com\",\n  \"name\": \"User Google\"\n}"
+          "text": "{\n  \"email\": \"amoussasoultone0+4@gmail.com\",\n  \"name\": \"Utilisateur Test Yaak\",\n  \"providerId\": \"google_test_12345\"\n}"
         },
         "bodyType": "application/json",
         "description": "",
@@ -140,7 +140,7 @@
         "method": "POST",
         "name": "OAuth",
         "sortPriority": -1767967417621.0,
-        "url": "http://localhost:3000/oauth/callback",
+        "url": "http://localhost:3000/api/auth/google/callback",
         "urlParameters": []
       },
       {

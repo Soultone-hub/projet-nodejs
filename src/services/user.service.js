@@ -4,6 +4,7 @@ import { randomBytes } from "crypto";
 import { authenticator } from 'otplib';
 import prisma from "#lib/prisma.js";
 import { sendVerificationEmail } from "../lib/mailer.js";
+import { TokenService } from '../services/token.service.js';
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, verifyPassword } from "#lib/password.js";
 import { generateAccessToken, generateRefreshToken } from "#lib/jwt.js"; // On va créer ces fonctions
@@ -217,51 +218,46 @@ static async blacklistToken(token, expiresAt) {
   });
 }
 
-static async loginWithOAuth(provider, providerId, email, name) {
-  // 1. Chercher si ce compte OAuth existe déjà
-  // Note: Prisma transforme souvent OAuthAccount en oAuthAccount ou oauthAccount
-  let account = await prisma.oAuthAccount.findUnique({
-    where: {
-      provider_providerId: { provider, providerId }
-    },
-    include: { user: true }
-  });
+static async loginWithOAuth(profile) {
+  const { email, name, provider, providerId } = profile;
 
-  let user;
+  return await prisma.$transaction(async (tx) => {
+    // 1. Chercher si ce compte OAuth (ex: Google ID 123) existe déjà
+    let oauthAccount = await tx.oAuthAccount.findUnique({
+      where: { 
+        provider_providerId: { provider, providerId } 
+      },
+      include: { user: true }
+    });
 
-  if (account) {
-    user = account.user;
-  } else {
-    // 2. Chercher par email si le compte n'est pas lié
-    user = await prisma.user.findUnique({ where: { email } });
+    if (oauthAccount) return oauthAccount.user;
+
+    // 2. Si le compte OAuth n'existe pas, vérifier si l'email est déjà utilisé
+    let user = await tx.user.findUnique({ where: { email } });
 
     if (!user) {
-      // 3. Créer l'utilisateur si inexistant
-      user = await prisma.user.create({
+      // 3. VRAIE INSCRIPTION : Création de l'utilisateur
+      user = await tx.user.create({
         data: {
           email,
           name,
-          emailVerifiedAt: new Date(),
-          password: null 
+          emailVerifiedAt: new Date(), // Google a déjà vérifié l'email
+          // On ne met pas de mot de passe car c'est un compte Social
         }
       });
     }
 
-    // 4. Lier le compte (Correction de la ligne 236)
-    await prisma.oAuthAccount.create({
+    // 4. Création du lien OAuth pour cet utilisateur
+    await tx.oAuthAccount.create({
       data: {
         provider,
         providerId,
         userId: user.id
       }
     });
-  }
 
-  // 5. Génération des tokens
-  const accessToken = await generateAccessToken({ id: user.id, role: user.role });
-  const refreshToken = await generateRefreshToken({ id: user.id });
-
-  return { accessToken, refreshToken, user };
+    return user;
+  });
 }
 
 static async generate2FASecret(userId) {
@@ -397,25 +393,20 @@ static async generateVerificationToken(userId) {
 }
 
 static async confirmAccount(token) {
-  // 1. Chercher l'utilisateur avec ce jeton
-  const user = await prisma.user.findFirst({
-    where: { verificationToken: token }
-  });
+    const user = await prisma.user.findFirst({
+      where: { verificationToken: token }
+    });
 
-  // 2. Si aucun utilisateur n'est trouvé, le jeton est invalide ou déjà utilisé
-  if (!user) {
-    throw new Error("Jeton de vérification invalide ou expiré.");
+    if (!user) throw new Error("Jeton invalide.");
+
+    return await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerifiedAt: new Date(),
+        verificationToken: null
+      }
+    });
   }
-
-  // 3. Mettre à jour l'utilisateur : on valide l'email et on vide le jeton
-  return await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      emailVerifiedAt: new Date(),
-      verificationToken: null // Très important pour la sécurité
-    }
-  });
-}
 
 static async resendConfirmation(email) {
   // 1. Chercher l'utilisateur
@@ -466,4 +457,47 @@ static async deleteAccount(userId) {
     prisma.user.delete({ where: { id: userId } })
   ]);
 }
+
+static async findOrCreateOAuthUser({ email, name, provider, providerId }) {
+  // ATTENTION : J'ai mis 'oAuthAccount' avec un grand 'A' pour correspondre à ton schéma
+  const oauthAccount = await prisma.oAuthAccount.findFirst({
+    where: {
+      provider,
+      providerId,
+    },
+    include: { user: true }
+  });
+
+  if (oauthAccount) {
+    return oauthAccount.user;
+  }
+
+  // 2. Chercher si l'utilisateur existe déjà par son email
+  let user = await prisma.user.findUnique({
+    where: { email }
+  });
+
+  // 3. Si l'utilisateur n'existe pas, le créer
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        email,
+        name,
+        emailVerifiedAt: new Date(), 
+      }
+    });
+  }
+
+  // 4. Créer la liaison OAuth (Vérifie bien l'orthographe 'oAuthAccount')
+  await prisma.oAuthAccount.create({
+    data: {
+      provider,
+      providerId,
+      userId: user.id
+    }
+  });
+
+  return user;
+}
+
 }

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { randomBytes } from "crypto";
 import { authenticator } from 'otplib';
 import prisma from "#lib/prisma.js";
+import { sendVerificationEmail } from "../lib/mailer.js";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, verifyPassword } from "#lib/password.js";
 import { generateAccessToken, generateRefreshToken } from "#lib/jwt.js"; // On va créer ces fonctions
@@ -18,16 +19,22 @@ export class UserService {
   // Génération du jeton de vérification
   const token = randomBytes(32).toString('hex');
 
-  return prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       email: data.email,
       password: hashedPassword,
       name: data.name,
-      verificationToken: token, // On ajoute le jeton ici
-    },
-    // On peut retourner le token ici pour faciliter tes tests dans Yaak
-    select: { id: true, email: true, name: true, verificationToken: true }
+      verificationToken: token,
+    }
   });
+
+  // DÉCISION : Envoi réel du mail ici
+  await sendVerificationEmail(user.email, token);
+
+  return user;
+
+  
+
 }
  static async login(email, password, ip, userAgent) {
   // --- 1. PROTECTION BRUTE-FORCE ---
@@ -389,36 +396,48 @@ static async generateVerificationToken(userId) {
   return token;
 }
 
-static async verifyAccountByToken(token) {
-  const user = await prisma.user.findUnique({
+static async confirmAccount(token) {
+  // 1. Chercher l'utilisateur avec ce jeton
+  const user = await prisma.user.findFirst({
     where: { verificationToken: token }
   });
 
-  if (!user) throw new Error("Jeton de vérification invalide ou expiré.");
+  // 2. Si aucun utilisateur n'est trouvé, le jeton est invalide ou déjà utilisé
+  if (!user) {
+    throw new Error("Jeton de vérification invalide ou expiré.");
+  }
 
+  // 3. Mettre à jour l'utilisateur : on valide l'email et on vide le jeton
   return await prisma.user.update({
     where: { id: user.id },
-    data: { 
+    data: {
       emailVerifiedAt: new Date(),
-      verificationToken: null // On supprime le jeton après usage
+      verificationToken: null // Très important pour la sécurité
     }
   });
 }
 
-static async resendVerificationToken(email) {
+static async resendConfirmation(email) {
+  // 1. Chercher l'utilisateur
   const user = await prisma.user.findUnique({ where: { email } });
 
+  // 2. Vérifications de sécurité
   if (!user) throw new Error("Utilisateur non trouvé");
-  if (user.emailVerifiedAt) throw new Error("Ce compte est déjà confirmé");
+  if (user.emailVerifiedAt) throw new Error("Ce compte est déjà vérifié");
 
-  // Génération d'un nouveau jeton
+  // 3. Générer un nouveau jeton
   const newToken = randomBytes(32).toString('hex');
 
-  return await prisma.user.update({
+  // 4. Mettre à jour l'utilisateur
+  await prisma.user.update({
     where: { id: user.id },
-    data: { verificationToken: newToken },
-    select: { email: true, verificationToken: true }
+    data: { verificationToken: newToken }
   });
+
+  // 5. Envoyer le nouvel email
+  await sendVerificationEmail(user.email, newToken);
+
+  return { message: "Nouvel email de vérification envoyé" };
 }
 static async disable2FA(userId) {
   const user = await prisma.user.findUnique({ where: { id: userId } });

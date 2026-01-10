@@ -36,9 +36,8 @@ router.delete("/me", checkBlacklist, userGuard, asyncHandler(UserController.dele
 router.get("/sessions", checkBlacklist, userGuard, asyncHandler(UserController.getSessions));
 router.delete("/sessions/:sessionId", checkBlacklist, userGuard, asyncHandler(UserController.terminateSession));
 router.delete("/sessions-others", checkBlacklist, userGuard, asyncHandler(UserController.terminateOtherSessions));
-router.post("/confirm-account", asyncHandler(UserController.confirmAccount));
-router.post("/resend-confirmation", asyncHandler(UserController.resendConfirmation));
-router.post("/2fa/disable", checkBlacklist, userGuard, asyncHandler(UserController.disable2FA));
+router.get("/confirm-account", asyncHandler(UserController.confirmAccountFromLink));
+router.post("/resend-confirmation", asyncHandler(UserController.resendConfirmation));router.post("/2fa/disable", checkBlacklist, userGuard, asyncHandler(UserController.disable2FA));
 // Route DELETE protégée
 router.delete("/me", checkBlacklist, userGuard, asyncHandler(UserController.deleteMe));
 export default router;

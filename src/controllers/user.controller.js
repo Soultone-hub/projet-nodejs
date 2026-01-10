@@ -171,20 +171,29 @@ static async verifyMe(req, res) {
     }
   });
 }
-static async confirmAccount(req, res) {
-  const { token } = req.body;
+static async confirmAccountFromLink(req, res) {
+  const { token } = req.query; // Récupère le token après le "?" dans l'URL
 
   if (!token) {
-    return res.status(400).json({ success: false, error: "Le jeton est requis." });
+    return res.status(400).send("<h1>Erreur</h1><p>Token manquant.</p>");
   }
 
   try {
-    await UserService.verifyAccountByToken(token);
-    res.json({ success: true, message: "Compte activé avec succès !" });
+    await UserService.confirmAccount(token);
+    
+    // Une fois validé, on affiche un message de succès en HTML
+    res.send(`
+      <div style="text-align: center; margin-top: 50px; font-family: sans-serif;">
+        <h1 style="color: green;">Compte vérifié avec succès !</h1>
+        <p>Vous pouvez maintenant fermer cette fenêtre et vous connecter sur l'application.</p>
+      </div>
+    `);
   } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
+    res.status(400).send(`<h1>Erreur de validation</h1><p>${error.message}</p>`);
   }
 }
+
+
 static async resendConfirmation(req, res) {
   const { email } = req.body;
 
@@ -193,12 +202,8 @@ static async resendConfirmation(req, res) {
   }
 
   try {
-    const data = await UserService.resendVerificationToken(email);
-    res.json({ 
-      success: true, 
-      message: "Un nouveau jeton a été généré",
-      token: data.verificationToken // Pour tes tests Yaak
-    });
+    const result = await UserService.resendConfirmation(email);
+    res.json({ success: true, message: result.message });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }

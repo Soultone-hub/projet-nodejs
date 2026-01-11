@@ -1,5 +1,14 @@
 import nodemailer from "nodemailer";
 
+// Debug des variables d'environnement
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log(
+  "EMAIL_PASS:",
+  process.env.EMAIL_PASS ? "***défini***" : "UNDEFINED"
+);
+console.log("Type EMAIL_USER:", typeof process.env.EMAIL_USER);
+console.log("Type EMAIL_PASS:", typeof process.env.EMAIL_PASS);
+
 // DÉCISION : Déclaration du transporteur en haut du fichier
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -11,7 +20,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendVerificationEmail = async (to, token) => {
   const verificationLink = `http://localhost:3000/confirm-account?token=${token}`;
-  
+
   const mailOptions = {
     from: `"Support Authentification" <${process.env.EMAIL_USER}>`,
     to: to,

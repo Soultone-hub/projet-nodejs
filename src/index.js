@@ -1,14 +1,10 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import dotenv from "dotenv";
-import passport from 'passport';
+import passport from "passport";
 
-// On charge d'abord les variables d'environnement
-dotenv.config();
-
-// Import de la configuration Passport (doit être fait après dotenv.config)
-import './config/passport.js'; 
+// Import de la configuration Passport
+import "./config/passport.js";
 
 import { logger, httpLogger } from "#lib/logger.js";
 import { errorHandler } from "#middlewares/error-handler.js";

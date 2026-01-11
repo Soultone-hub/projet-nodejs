@@ -1,71 +1,101 @@
-API d'Authentification Sécurisée - TP Node.js
-Ce projet est une solution complète d'authentification et de gestion d'utilisateurs construite avec Node.js, Express, Prisma (SQLite) et JWT. Il implémente les meilleures pratiques de sécurité modernes.
+## Objectif
 
-🚀 Fonctionnalités Clés
-Gestion du cycle de vie : Inscription, Confirmation de compte par jeton, Suppression de compte avec nettoyage en cascade.
+Implémenter une API REST d'authentification complète intégrant plusieurs méthodes d'authentification.
 
-Sécurité Avancée :
+---
 
-Authentification à deux facteurs (2FA) via TOTP.
+## Fonctionnalités à Implémenter
 
-Gestion des sessions multiples et révocation à distance.
+### Authentification de Base
 
-Blacklistage des Refresh Tokens pour une déconnexion sécurisée.
+- Inscription
+- Connexion
+- Déconnexion
+- Refresh token
+- Mot de passe oublié (envoi d'email)
+- Réinitialisation du mot de passe
+- Changement de mot de passe (utilisateur connecté)
 
-Protection contre le brute-force via l'historique de connexion.
+### Vérification Email
 
-OAuth : Simulation de flux d'authentification sociale (Google/Github).
+- Vérification du compte par email
+- Renvoi de l'email de vérification
 
-🛠️ Installation
-Cloner le dépôt et installer les dépendances :
+### Authentification OAuth
 
-Bash
+- Connexion via Google ou GitHub (un seul provider au choix)
 
-npm install
-Configurer l'environnement : Créez un fichier .env à la racine et ajoutez vos secrets :
+### Authentification à Deux Facteurs (2FA)
 
-Extrait de code
+- Activation du 2FA
+- Désactivation du 2FA
+- Vérification du code 2FA à la connexion
 
-DATABASE_URL="file:./dev.db"
-JWT_SECRET="votre_secret_access_token"
-REFRESH_SECRET="votre_secret_refresh_token"
-Initialiser la base de données :
+### Gestion des Sessions
 
-Bash
+- Lister ses sessions actives
+- Révoquer une session spécifique
+- Révoquer toutes les autres sessions
 
-npx prisma db push
-npx prisma generate
-Lancer le serveur :
+### Gestion du Profil
 
-Bash
+- Consulter son profil
+- Modifier son profil
+- Supprimer son compte
 
-npm run dev
-🧪 Guide de Test (Yaak)
-Une collection complète de tests est fournie pour valider l'API. Voici l'ordre recommandé pour tester le flux complet :
+### Sécurité
 
-01. Inscription : Crée l'utilisateur. Récupérez le verificationToken dans la réponse JSON.
+- Protection contre le brute-force (rate limiting)
+- Historique des connexions (date, IP, appareil)
 
-02. Confirmation Compte : Utilisez le token pour activer le compte.
+---
 
-03. Connexion : Obtenez vos tokens JWT.
+## Modèle de Base de Données
 
-04. Profil : Accédez à vos données protégées.
+### User
 
-05. 2FA (Optionnel) :
+Table principale des utilisateurs.
 
-Générez le secret, validez-le pour l'activer.
+- `emailVerifiedAt` : date de vérification de l'email (null = non vérifié)
+- `twoFactorEnabledAt` : date d'activation du 2FA (null = désactivé)
+- `disabledAt` : date de désactivation du compte (null = actif)
+- `password` : peut être null si l'utilisateur s'inscrit via OAuth
 
-Testez ensuite la désactivation pour vérifier le nettoyage en base.
+### OAuthAccount
 
-06. Suppression : Utilisez la route DELETE /me pour tester la suppression en cascade (Sessions, Historique, User).
+Comptes OAuth liés (Google ou GitHub).
 
-📂 Structure du Projet
-src/services/ : Logique métier et interactions Prisma.
+- La combinaison `provider` + `providerId` est unique
 
-src/controllers/ : Gestion des requêtes et réponses HTTP.
+### RefreshToken
 
-src/routes/ : Définition des points d'entrée de l'API.
+Tokens de rafraîchissement JWT. Sert aussi à gérer les sessions actives.
 
-src/middlewares/ : Protections (Auth, Blacklist, Guards).
+- Fonctionne en **whitelist** : seuls les tokens présents dans la table sont valides
+- `revokedAt` : date de révocation (null = token actif)
+- Un token est valide si : présent en base ET `revokedAt` est null ET `expiresAt` > maintenant
+- Pour lister les sessions actives : lister les RefreshTokens non révoqués
+- Pour révoquer une session : mettre à jour `revokedAt` avec la date actuelle
 
-prisma/ : Schéma de la base de données SQLite.
+### BlacklistedAccessToken
+
+Access tokens révoqués avant leur expiration naturelle.
+
+- Fonctionne en **blacklist** : les tokens présents ici sont invalides
+- À chaque requête authentifiée, vérifier si l'access token est dans cette table
+- `expiresAt` : conserver la date d'expiration originale pour nettoyer la table périodiquement
+
+### VerificationToken
+
+Token envoyé par email pour vérifier l'adresse email. Expire après un certain temps.
+
+### PasswordResetToken
+
+Token pour réinitialiser le mot de passe oublié. Envoyé par email, expire après un certain temps.
+
+### LoginHistory
+
+Historique des tentatives de connexion.
+
+- `success` : true si connexion réussie, false si échouée
+- Utile pour détecter les tentatives suspectes
